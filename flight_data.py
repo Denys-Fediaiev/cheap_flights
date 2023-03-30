@@ -18,6 +18,7 @@ class FlightData:
         self.nights_in_dst_from = 7
         self.nights_in_dst_to = 28
         self.curr = "EUR"
+        self.max_stopovers = "1"
 # s = FlightData("Paris")
 
 

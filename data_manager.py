@@ -1,24 +1,31 @@
+import os
+
 import requests
 
 
 class DataManager:
     #This class is responsible for talking to the Google Sheet.
     def __init__(self):
-        self.api_url = "https://api.sheety.co/636f489255bef7e9a415099266b12b0b/flightDeals/prices"
+        self.api_url = "https://api.sheety.co/636f489255bef7e9a415099266b12b0b/flightDeals"
         self.params = {}
         self.headers = {
-            "Authorization": "Basic key=="
+            "Authorization": os.environ["AUTHORIZATION"]
         }
         self.kiwi_headers = {
-            "apikey": "api"
+            "apikey": os.environ["KIWI_API_KEY"]
         }
-        self.response = requests.get(self.api_url)
-        self.data = self.response.json()
 
-    def get_sheet_data(self):
-        return self.data
+    def get_sheet_data(self, sheet):
+        if sheet == "prices":
+            response = requests.get(f"{self.api_url}/prices")
+            data = response.json()
+            return data
+        elif sheet == "users":
+            response = requests.get(f"{self.api_url}/users")
+            data = response.json()
+            return data
 
-    def post_sheet_data(self, city, iatacode, lowest_price):
+    def post_sheet_price(self, city, iatacode, lowest_price):
         self.params = {
             "price": {
                 "city": city,
@@ -26,10 +33,20 @@ class DataManager:
                 "lowestPrice": lowest_price
             }
         }
-        self.response = requests.post(url=self.api_url, json=self.params, headers=self.headers)
+        self.response = requests.post(url=f"{self.api_url}/prices", json=self.params, headers=self.headers)
         self.data = self.response.json()
 
-    def update_sheet_data(self, object_id, city=None, iatacode=None, lowest_price=None):
+    def post_sheet_users(self, f_name, l_name, email):
+        self.params = {
+            "user": {
+                "firstName": f_name,
+                "lastName": l_name,
+                "email": email
+            }
+        }
+        self.response = requests.post(url=f"{self.api_url}/users", json=self.params, headers=self.headers)
+
+    def update_sheet_price(self, object_id, city=None, iatacode=None, lowest_price=None):
         self.api_url = f"https://api.sheety.co/636f489255bef7e9a415099266b12b0b/flightDeals/prices/{object_id}"
 
         self.params = {

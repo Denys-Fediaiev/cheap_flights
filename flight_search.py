@@ -8,21 +8,21 @@ class FlightSearch:
         #self.flight_data = flight_data
         self.search_api_url = "https://api.tequila.kiwi.com"
         self.headers = {
-            "apikey": "api"
+            "apikey": os.environ["API_KEY"]
         }
         self.params = {}
         # self.data_time = datetime.datetime.now().strftime()
 
     def search_flight(self, flight_data: FlightData):
         self.params = {
-            #"apikey": "api",
             "fly_from": flight_data.departure_airport_code,
             "fly_to": flight_data.arrive_to,
             "date_from": flight_data.date_from,
             "date_to": flight_data.date_to,
             "nights_in_dst_from": flight_data.nights_in_dst_from,
             "nights_in_dst_to": flight_data.nights_in_dst_to,
-            "one_for_city": 1
+            "one_for_city": 1,
+            "max_stopovers": flight_data.max_stopovers
         }
 
         response = requests.get(url=f"{self.search_api_url}/search", params=self.params, headers=self.headers)
